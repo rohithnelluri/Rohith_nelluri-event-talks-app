@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeTypeFilter = 'all';
     let searchQuery = '';
     let sortOrder = 'newest';
+    let lastGeneratedDraft = '';
 
     // DOM Elements
     const refreshBtn = document.getElementById('refresh-btn');
@@ -416,6 +417,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Tweet Composer Operations
     // ----------------------------------------------------
     function selectUpdateForComposer(update) {
+        // Discard confirmation warning
+        const currentText = tweetTextarea.value.trim();
+        if (currentText && currentText !== lastGeneratedDraft.trim() && selectedUpdateId !== update.id) {
+            const confirmDiscard = confirm("You have customized your current tweet draft. Do you want to discard your changes and draft this new update?");
+            if (!confirmDiscard) return;
+        }
+
         selectedUpdateId = update.id;
         
         // Update selected card UI class
@@ -458,6 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const draftText = `${prefix}${updateTextSnippet}\n\n${update.link}\n${defaultTags}`;
         tweetTextarea.value = draftText;
+        lastGeneratedDraft = draftText;
         
         // Trigger UI updates
         updateCharCount();
@@ -478,6 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectionPreview.classList.add('empty');
 
         tweetTextarea.value = '';
+        lastGeneratedDraft = '';
         updateCharCount();
     }
 
