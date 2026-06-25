@@ -564,26 +564,42 @@ body.dark-theme .bg-glow-2 {
     background-color: var(--color-primary-bg);
 }
 
-/* Theme Switcher */
-.theme-toggle-container {
+/* Header Theme Switcher */
+.header-theme-toggle {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    padding: 14px;
+    gap: 8px;
     background: var(--bg-input);
-    border-radius: 10px;
     border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 30px;
+    transition: var(--transition-fast);
+}
+
+.header-theme-toggle:hover {
+    border-color: var(--border-hover);
+}
+
+.theme-label {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    transition: color var(--transition-fast);
+}
+
+body.dark-theme .moon-icon {
+    color: var(--color-primary);
+}
+
+body.light-theme .sun-icon {
+    color: var(--color-changed);
 }
 
 .switch {
     position: relative;
     display: inline-block;
-    width: 42px;
-    height: 22px;
+    width: 34px;
+    height: 18px;
 }
 
 .switch input { 
@@ -606,8 +622,8 @@ body.dark-theme .bg-glow-2 {
 .slider:before {
     position: absolute;
     content: "";
-    height: 16px;
-    width: 16px;
+    height: 12px;
+    width: 12px;
     left: 3px;
     bottom: 3px;
     background-color: white;
@@ -619,7 +635,7 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-    transform: translateX(20px);
+    transform: translateX(16px);
 }
 
 .slider.round {
