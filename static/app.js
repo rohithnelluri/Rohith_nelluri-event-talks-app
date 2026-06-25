@@ -503,6 +503,27 @@ document.addEventListener('DOMContentLoaded', () => {
         
         charCountSpan.textContent = count;
         
+        // Circular progress ring calculation
+        const circle = document.getElementById('char-progress-circle');
+        if (circle) {
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            
+            const percent = Math.min((count / 280) * 100, 100);
+            const offset = circumference - (percent / 100 * circumference);
+            circle.style.strokeDashoffset = offset;
+            
+            // Set circle color based on limits
+            if (count > 280) {
+                circle.style.stroke = 'var(--color-deprecated)';
+            } else if (count > 250) {
+                circle.style.stroke = 'var(--color-changed)';
+            } else {
+                circle.style.stroke = 'var(--color-primary)';
+            }
+        }
+        
         // Adjust styling based on character thresholds
         if (count > 280) {
             charCounterWrapper.className = 'char-counter danger';

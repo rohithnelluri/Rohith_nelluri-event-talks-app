@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="dark-theme">
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
     <div class="app-container">
         
         <!-- Header -->
@@ -126,8 +128,47 @@
                 </div>
 
                 <div id="loading-state" class="loading-state hidden">
-                    <div class="loading-spinner"></div>
-                    <p>Fetching latest release notes from Google Cloud...</p>
+                    <div class="skeleton-feed">
+                        <div class="skeleton-card">
+                            <div class="skeleton-header">
+                                <div class="skeleton-date"></div>
+                                <div class="skeleton-badge"></div>
+                            </div>
+                            <div class="skeleton-line skeleton-line-1"></div>
+                            <div class="skeleton-line skeleton-line-2"></div>
+                            <div class="skeleton-line skeleton-line-3"></div>
+                            <div class="skeleton-footer">
+                                <div class="skeleton-btn"></div>
+                                <div class="skeleton-btn"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-card">
+                            <div class="skeleton-header">
+                                <div class="skeleton-date"></div>
+                                <div class="skeleton-badge"></div>
+                            </div>
+                            <div class="skeleton-line skeleton-line-1"></div>
+                            <div class="skeleton-line skeleton-line-2"></div>
+                            <div class="skeleton-footer">
+                                <div class="skeleton-btn"></div>
+                                <div class="skeleton-btn"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-card">
+                            <div class="skeleton-header">
+                                <div class="skeleton-date"></div>
+                                <div class="skeleton-badge"></div>
+                            </div>
+                            <div class="skeleton-line skeleton-line-1"></div>
+                            <div class="skeleton-line skeleton-line-2"></div>
+                            <div class="skeleton-line skeleton-line-3"></div>
+                            <div class="skeleton-footer">
+                                <div class="skeleton-btn"></div>
+                                <div class="skeleton-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="skeleton-loading-text">Fetching latest release notes from Google Cloud...</p>
                 </div>
 
                 <div id="error-state" class="error-state hidden">
@@ -183,8 +224,16 @@
                         <textarea id="tweet-textarea" placeholder="Select an update or type your tweet here..." rows="6"></textarea>
                         
                         <div class="editor-footer">
-                            <div class="char-counter" id="char-counter">
-                                <span id="char-count">0</span> / 280
+                            <div class="char-counter-wrapper">
+                                <div class="progress-ring-container">
+                                    <svg class="progress-ring" width="24" height="24">
+                                        <circle class="progress-ring__circle-bg" stroke="var(--border-color)" stroke-width="2.5" fill="transparent" r="9" cx="12" cy="12"/>
+                                        <circle class="progress-ring__circle" id="char-progress-circle" stroke="var(--color-primary)" stroke-width="2.5" fill="transparent" r="9" cx="12" cy="12"/>
+                                    </svg>
+                                </div>
+                                <div class="char-counter" id="char-counter">
+                                    <span id="char-count">0</span> / 280
+                                </div>
                             </div>
                             <span class="link-notice" title="X (Twitter) automatically counts all URLs as 23 characters using t.co">
                                 Includes link (23 chars)
