@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // DOM Elements
     const refreshBtn = document.getElementById('refresh-btn');
+    const exportCsvBtn = document.getElementById('export-csv-btn');
     const syncStatus = document.getElementById('sync-status');
     const statusText = syncStatus.querySelector('.status-text');
     const searchInput = document.getElementById('search-input');
@@ -643,6 +644,55 @@ document.addEventListener('DOMContentLoaded', () => {
         window.open(shareUrl, '_blank');
         showToast("Opening X (Twitter)...", "success");
     });
+
+    // CSV Export functionality
+    function exportToCSV() {
+        if (filteredUpdates.length === 0) {
+            showToast("No updates available to export", "warning");
+            return;
+        }
+        
+        const headers = ["Date", "Type", "Headline", "Description", "Link"];
+        const rows = filteredUpdates.map(update => [
+            update.date,
+            update.type,
+            update.headline,
+            update.text,
+            update.link
+        ]);
+        
+        const escapeCsvValue = (val) => {
+            if (val === null || val === undefined) return '';
+            let formatted = val.toString().trim();
+            if (formatted.includes('"') || formatted.includes(',') || formatted.includes('\n') || formatted.includes('\r')) {
+                formatted = `"${formatted.replace(/"/g, '""')}"`;
+            }
+            return formatted;
+        };
+        
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(escapeCsvValue).join(','))
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
+        
+        link.setAttribute("href", url);
+        link.setAttribute("download", `bigquery_releases_${dateStr}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast(`Exported ${filteredUpdates.length} updates to CSV!`, "success");
+    }
+
+    exportCsvBtn.addEventListener('click', exportToCSV);
 
     // Load theme & data on start
     initTheme();
