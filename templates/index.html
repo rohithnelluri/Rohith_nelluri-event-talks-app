@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Notes Hub & Tweet Drafter</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme">
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo-title">
+                <div class="gcp-logo-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28">
+                        <path fill="#4285F4" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
+                    </svg>
+                </div>
+                <div class="title-meta">
+                    <h1>BigQuery Release Notes</h1>
+                    <span class="subtitle">Stay updated with Google Cloud BigQuery developments</span>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <div id="sync-status" class="sync-status">
+                    <span class="status-indicator"></span>
+                    <span class="status-text">Not Loaded</span>
+                </div>
+                <button id="refresh-btn" class="btn btn-primary refresh-btn">
+                    <svg class="spinner-icon" viewBox="0 0 24 24" width="18" height="18">
+                        <path fill="currentColor" d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm-6 8c0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3c-3.31 0-6-2.69-6-6z"/>
+                    </svg>
+                    <span class="btn-text">Refresh Feed</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            
+            <!-- Left Panel: Filters & Search -->
+            <section class="panel filter-panel">
+                <div class="panel-section">
+                    <h3>Search Release Notes</h3>
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16">
+                            <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                        <input type="text" id="search-input" placeholder="Type keywords e.g., metadata, GA...">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Filter by Type</h3>
+                    <div class="filter-group" id="type-filters">
+                        <button class="filter-chip active" data-type="all">
+                            <span class="chip-label">All Updates</span>
+                            <span class="chip-count" id="count-all">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="feature">
+                            <span class="chip-color feature-color"></span>
+                            <span class="chip-label">Feature</span>
+                            <span class="chip-count" id="count-feature">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="fixed">
+                            <span class="chip-color fixed-color"></span>
+                            <span class="chip-label">Fixed</span>
+                            <span class="chip-count" id="count-fixed">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="changed">
+                            <span class="chip-color changed-color"></span>
+                            <span class="chip-label">Changed</span>
+                            <span class="chip-count" id="count-changed">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="deprecated">
+                            <span class="chip-color deprecated-color"></span>
+                            <span class="chip-label">Deprecated</span>
+                            <span class="chip-count" id="count-deprecated">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="general">
+                            <span class="chip-color general-color"></span>
+                            <span class="chip-label">General</span>
+                            <span class="chip-count" id="count-general">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Sort Order</h3>
+                    <div class="sort-group">
+                        <label class="radio-label">
+                            <input type="radio" name="sort-order" value="newest" checked>
+                            <span>Newest First</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="sort-order" value="oldest">
+                            <span>Oldest First</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel-section theme-section">
+                    <div class="theme-toggle-container">
+                        <span>Light Mode</span>
+                        <label class="switch">
+                            <input type="checkbox" id="theme-switch" checked>
+                            <span class="slider round"></span>
+                        </label>
+                        <span>Dark Mode</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Panel: Feed of release notes -->
+            <section class="feed-panel">
+                <div class="feed-header">
+                    <h2>Updates Found (<span id="results-count">0</span>)</h2>
+                    <div id="active-filters-list" class="active-filters-list"></div>
+                </div>
+
+                <div id="loading-state" class="loading-state hidden">
+                    <div class="loading-spinner"></div>
+                    <p>Fetching latest release notes from Google Cloud...</p>
+                </div>
+
+                <div id="error-state" class="error-state hidden">
+                    <svg viewBox="0 0 24 24" width="48" height="48">
+                        <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h-2v-2h2V9h2v2h2v2h-2v2zm0-8h-2V7h2v2z"/>
+                    </svg>
+                    <h3>Failed to Load Feed</h3>
+                    <p id="error-msg"></p>
+                    <button id="retry-btn" class="btn btn-secondary">Retry Fetch</button>
+                </div>
+
+                <div id="empty-state" class="empty-state hidden">
+                    <h3>No updates match your criteria</h3>
+                    <p>Try resetting the search or filters to see all release notes.</p>
+                    <button id="reset-filters-btn" class="btn btn-secondary">Reset Filters</button>
+                </div>
+
+                <div id="feed-container" class="feed-container">
+                    <!-- Release note cards will be injected here by Javascript -->
+                </div>
+            </section>
+
+            <!-- Right Panel: Tweet Composer -->
+            <section class="panel composer-panel">
+                <div class="composer-header">
+                    <div class="composer-title-wrapper">
+                        <svg viewBox="0 0 24 24" width="20" height="20" class="twitter-icon">
+                            <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        <h3>X (Twitter) Composer</h3>
+                    </div>
+                    <button id="clear-composer" class="btn-clear" title="Clear selection">Clear</button>
+                </div>
+
+                <div class="composer-body">
+                    <!-- Preview of what is being drafted -->
+                    <div id="selection-preview" class="selection-preview empty">
+                        <p class="preview-placeholder">Select any release note update card using the "Draft Tweet" button to generate a template here.</p>
+                        
+                        <div class="preview-details hidden">
+                            <div class="preview-header">
+                                <span id="preview-date" class="preview-date">June 23, 2026</span>
+                                <span id="preview-type" class="badge">Feature</span>
+                            </div>
+                            <h4 id="preview-title" class="preview-title">Automated metadata transfer</h4>
+                            <p id="preview-text" class="preview-text"></p>
+                        </div>
+                    </div>
+
+                    <!-- Editor -->
+                    <div class="tweet-editor-wrapper">
+                        <label for="tweet-textarea">Draft Text</label>
+                        <textarea id="tweet-textarea" placeholder="Select an update or type your tweet here..." rows="6"></textarea>
+                        
+                        <div class="editor-footer">
+                            <div class="char-counter" id="char-counter">
+                                <span id="char-count">0</span> / 280
+                            </div>
+                            <span class="link-notice" title="X (Twitter) automatically counts all URLs as 23 characters using t.co">
+                                Includes link (23 chars)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Hashtags -->
+                    <div class="composer-tags">
+                        <span>Quick Tags:</span>
+                        <div class="tag-chips">
+                            <button class="tag-chip-btn" data-tag="#BigQuery">#BigQuery</button>
+                            <button class="tag-chip-btn" data-tag="#GoogleCloud">#GoogleCloud</button>
+                            <button class="tag-chip-btn" data-tag="#GCP">#GCP</button>
+                            <button class="tag-chip-btn" data-tag="#DataEngineering">#DataEngineering</button>
+                            <button class="tag-chip-btn" data-tag="#CloudComputing">#CloudComputing</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button id="tweet-btn" class="btn btn-tweet btn-disabled" disabled>
+                        <svg viewBox="0 0 24 24" width="18" height="18">
+                            <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        <span>Share on X</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Toast Notification -->
+        <div id="toast" class="toast hidden"></div>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
